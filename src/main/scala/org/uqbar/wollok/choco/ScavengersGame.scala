@@ -1,33 +1,23 @@
 package org.uqbar.wollok.choco
 
 import org.uqbar.chocolate.core.Game
-import org.uqbar.chocolate.core.components.debug.FloorShower
-import org.uqbar.cacao.ResourceLoader
-import org.uqbar.chocolate.core.loaders.ResourceLoader
-import org.uqbar.chocolate.core.components.GameComponent
-import org.uqbar.chocolate.core.components.Visible
-import org.uqbar.chocolate.core.dimensions.Positioned
 import org.uqbar.chocolate.core.appearances.Animation
-import org.uqbar.chocolate.core.reactions.events.Typed
-import org.uqbar.chocolate.core.reactions.events.Pressed
-import org.uqbar.chocolate.core.reactions.io.Key.Navigation.Arrow
-import org.uqbar.chocolate.core.reactions.io.Key.Navigation.Arrow.Up
-import org.uqbar.chocolate.core.reactions.io.Key.Navigation.Arrow.Down
-import org.uqbar.chocolate.core.reactions.io.Key.Navigation.Arrow.Left
-import org.uqbar.chocolate.core.reactions.io.Key.Navigation.Arrow.Right
 import org.uqbar.chocolate.core.appearances.Appearance
-import org.uqbar.chocolate.core.reactions.io.Key.Special.Space
+import org.uqbar.chocolate.core.loaders.ResourceLoader
+import org.uqbar.chocolate.core.reactions.events.Pressed
 import org.uqbar.chocolate.core.reactions.events.Update
+import org.uqbar.chocolate.core.reactions.io.Key.Special.Space
+import org.uqbar.math.vectors.Touple_to_Vector
+import org.uqbar.wollok.choco.actor.traits.{Actor, MovesWithKeyboard}
 
 object ScavengersGame extends Game {
-  
   def title = "Scavengers Game !"
   def displaySize = (800, 600)
   
   currentScene.addComponent(new Scavenger)
 }
 
-class Scavenger extends SeMueveConTeclado  {
+class Scavenger extends Actor with MovesWithKeyboard  {
     translation = (10, 10)
     val allSprites = ResourceLoader.loadSprite("/scavengers/Scavengers_SpriteSheet.png") 
     
@@ -72,14 +62,4 @@ class TimeLimitedState(a : Scavenger, app : Appearance, var duration : Double, v
       timeToEnd = duration
     }
   }
-}
-
-trait SeMueveConTeclado extends Visible with Positioned {
-  in {
-     case Pressed(Up(_)) ⇒ move(0, -velocity)
-     case Pressed(Down(_)) ⇒ move(0, velocity)
-     case Pressed(Left(_)) ⇒ move(-velocity, 0)
-     case Pressed(Right(_)) ⇒ move(velocity, 0)
-  }
-  def velocity : Double
 }
