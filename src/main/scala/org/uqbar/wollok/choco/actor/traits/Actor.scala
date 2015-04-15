@@ -17,8 +17,18 @@ import org.uqbar.chocolate.core.reactions.io.MouseButton.{Left => MouseLeft}
 import org.uqbar.math.vectors.MutableVector
 import org.uqbar.math.vectors.Touple_to_Vector
 import org.uqbar.math.vectors.Vector
+import org.uqbar.cacao.Renderer
+import org.uqbar.chocolate.core.appearances.Appearance
 
+/**
+ * 
+ */
 trait Actor extends Visible with Positioned {
+  var state : State = _ // REVIEWME: should start with a default state
+  // and a predefined image (?)
+  
+  override def appearance = state.appearance
+  def appearance_=(app:Appearance) { state.appearance = app }
 }
 
 trait BaseMovement extends Actor {
@@ -86,23 +96,32 @@ trait FollowMouseClick extends Actor {
 trait RotationalMovement extends BaseMovement {
   //TODO: avoid rotation the already rotated sprites because it will screw up the image.
   // use the original one.
-  var angle = Math.PI / 2
+  var angle = 0d
+  val baseAngle = Math.PI / 2
   var rotationVelocity = 10
   
   override def moveLeft() { rotate(-rotationVelocity) }
   override def moveRigth() { rotate(rotationVelocity) }
   
-  def rotate(delta: Double) {
-    angle += Math.toRadians(delta)
-    appearance match  {
-      case a: Animation => a.rotate(Math.toRadians(delta)) 
-    }
-  }
+  def rotate(delta: Double) { angle += Math.toRadians(delta) }
 
   override def moveUp() { ahead(-1d) }
   override def moveDown() { ahead(1d) }
   
+  def absoluteAngle() = baseAngle + angle
+  
   def ahead(direction : Double) {
-    this.move(direction * velocity * Math.cos(angle), direction * velocity * Math.sin(angle))
+    this.move(direction * velocity * Math.cos(absoluteAngle), direction * velocity * Math.sin(absoluteAngle))
+  }
+  abstract override def render(renderer: Renderer) = {
+    this.synchronized {
+      val backup = appearance.clone
+      
+      appearance match {
+        case a: Animation => a.rotate(angle)
+      }
+      super.render(renderer)
+      appearance = backup
+    }
   }
 }
