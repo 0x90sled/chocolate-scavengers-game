@@ -9,6 +9,8 @@ import org.uqbar.chocolate.core.reactions.events.Update
 import org.uqbar.chocolate.core.reactions.io.Key.Special.Space
 import org.uqbar.math.vectors.Touple_to_Vector
 import org.uqbar.wollok.choco.actor.traits.{Actor, MovesWithKeyboard}
+import org.uqbar.wollok.choco.actor.traits.FollowMouse
+import org.uqbar.wollok.choco.actor.traits.RotationalMovement
 
 object ScavengersGame extends Game {
   def title = "Scavengers Game !"
@@ -17,7 +19,7 @@ object ScavengersGame extends Game {
   currentScene.addComponent(new Scavenger)
 }
 
-class Scavenger extends Actor with MovesWithKeyboard  {
+class Scavenger extends Actor with RotationalMovement {
     translation = (10, 10)
     val allSprites = ResourceLoader.loadSprite("/scavengers/Scavengers_SpriteSheet.png") 
     
