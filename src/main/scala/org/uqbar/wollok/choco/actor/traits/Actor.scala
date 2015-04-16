@@ -31,31 +31,25 @@ trait Actor extends Visible with Positioned {
   override def appearance = state.appearance
   def appearance_=(app:Appearance) { state.appearance = app }
   
-  in {
+  in { 
     case Update(delta) ⇒ state.update(delta)
+    //case e => state.handle(e)
   }
 }
 
 trait BaseMovement extends Actor {
   in {
-     case Pressed(W) ⇒ moveUp()
-     case Pressed(Up(_)) ⇒ moveUp()
-     
-     case Pressed(S) ⇒ moveDown()
-     case Pressed(Down(_)) ⇒ moveDown()
-     
-     case Pressed(A) ⇒ moveLeft()
-     case Pressed(Left(_)) ⇒ moveLeft()
-     
-     case Pressed(Right(_)) ⇒ moveRight()
-     case Pressed(D) ⇒ moveRight()
+     case Pressed(W) ⇒ onKeyUp() ; case Pressed(Up(_)) ⇒ onKeyUp()
+     case Pressed(S) ⇒ onKeyDown() ; case Pressed(Down(_)) ⇒ onKeyDown()
+     case Pressed(A) ⇒ onKeyLeft() ; case Pressed(Left(_)) ⇒ onKeyLeft()
+     case Pressed(Right(_)) ⇒ onKeyRight() ; case Pressed(D) ⇒ onKeyRight()
   }
-  def moveUp()
-  def moveDown()
-  def moveLeft()
-  def moveRight()
+  def onKeyUp()
+  def onKeyDown()
+  def onKeyLeft()
+  def onKeyRight()
   
-  def velocity : Double
+  def velocity : Double  // show be a vector (?)
 }
 
 /**
@@ -64,10 +58,10 @@ trait BaseMovement extends Actor {
  * @author jfernandes
  */
 trait MovesWithKeyboard extends BaseMovement {
-  override def moveUp() { move(0, -velocity) }
-  override def moveDown() { move(0, velocity) }
-  override def moveLeft() { move(-velocity, 0) }
-  override def moveRight() { move(velocity, 0) }
+  override def onKeyUp() { move(0, -velocity) }
+  override def onKeyDown() { move(0, velocity) }
+  override def onKeyLeft() { move(-velocity, 0) }
+  override def onKeyRight() { move(velocity, 0) }
 }
 
 /**
@@ -85,9 +79,9 @@ trait FollowMouse extends Actor {
  * on a click.
  */
 trait FollowMouseClick extends Actor {
-  //TODO: interpolate
   protected var _mousePosition: Vector = (0, 0)
   in { 
+    //TODO: interpolate
     case MouseMoved(position) => _mousePosition = position
     case Pressed(MouseLeft) =>  move(_mousePosition - this.translation)
   }
@@ -99,26 +93,30 @@ trait FollowMouseClick extends Actor {
  * will make it go forewards or backwards.
  */
 trait RotationalMovement extends BaseMovement {
-  //TODO: avoid rotation the already rotated sprites because it will screw up the image.
-  // use the original one.
+  class Direction(var dir: Double) { }
+  object Foreward extends Direction(-1d)
+  object Backward extends Direction(1d)
+  
   var angle = 0d
   val baseAngle = Math.PI / 2
   var rotationVelocity = 10
+
+  def absoluteAngle() = baseAngle + angle
   
-  override def moveLeft() { rotate(-rotationVelocity) }
-  override def moveRight() { rotate(rotationVelocity) }
+  override def onKeyLeft() { rotate(-rotationVelocity) }
+  override def onKeyRight() { rotate(rotationVelocity) }
   
   def rotate(delta: Double) { angle += Math.toRadians(delta) }
 
-  override def moveUp() { ahead(-1d) }
-  override def moveDown() { ahead(1d) }
+  override def onKeyUp() { move(Foreward) }
+  override def onKeyDown() { move(Backward) }
   
-  def absoluteAngle() = baseAngle + angle
-  
-  def ahead(direction : Double) {
-    this.move(direction * velocity * Math.cos(absoluteAngle), direction * velocity * Math.sin(absoluteAngle))
+  def move(direction : Direction) {
+    move(direction.dir * velocity * Math.cos(absoluteAngle), direction.dir * velocity * Math.sin(absoluteAngle))
   }
+  
   abstract override def render(renderer: Renderer) = {
+    // HACK !
     this.synchronized {
       val backup = appearance.clone
       
