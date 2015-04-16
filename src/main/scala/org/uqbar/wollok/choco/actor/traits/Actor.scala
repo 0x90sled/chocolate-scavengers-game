@@ -19,9 +19,10 @@ import org.uqbar.math.vectors.Touple_to_Vector
 import org.uqbar.math.vectors.Vector
 import org.uqbar.cacao.Renderer
 import org.uqbar.chocolate.core.appearances.Appearance
+import org.uqbar.chocolate.core.reactions.events.Update
 
 /**
- * 
+ * An actor has a current State
  */
 trait Actor extends Visible with Positioned {
   var state : State = _ // REVIEWME: should start with a default state
@@ -29,6 +30,10 @@ trait Actor extends Visible with Positioned {
   
   override def appearance = state.appearance
   def appearance_=(app:Appearance) { state.appearance = app }
+  
+  in {
+    case Update(delta) ⇒ state.update(delta)
+  }
 }
 
 trait BaseMovement extends Actor {
@@ -42,13 +47,13 @@ trait BaseMovement extends Actor {
      case Pressed(A) ⇒ moveLeft()
      case Pressed(Left(_)) ⇒ moveLeft()
      
-     case Pressed(Right(_)) ⇒ moveRigth()
-     case Pressed(D) ⇒ moveRigth()
+     case Pressed(Right(_)) ⇒ moveRight()
+     case Pressed(D) ⇒ moveRight()
   }
   def moveUp()
   def moveDown()
   def moveLeft()
-  def moveRigth()
+  def moveRight()
   
   def velocity : Double
 }
@@ -62,7 +67,7 @@ trait MovesWithKeyboard extends BaseMovement {
   override def moveUp() { move(0, -velocity) }
   override def moveDown() { move(0, velocity) }
   override def moveLeft() { move(-velocity, 0) }
-  override def moveRigth() { move(velocity, 0) }
+  override def moveRight() { move(velocity, 0) }
 }
 
 /**
@@ -101,7 +106,7 @@ trait RotationalMovement extends BaseMovement {
   var rotationVelocity = 10
   
   override def moveLeft() { rotate(-rotationVelocity) }
-  override def moveRigth() { rotate(rotationVelocity) }
+  override def moveRight() { rotate(rotationVelocity) }
   
   def rotate(delta: Double) { angle += Math.toRadians(delta) }
 
@@ -125,3 +130,11 @@ trait RotationalMovement extends BaseMovement {
     }
   }
 }
+
+
+//trait FlipHorizontally extends BaseMovement {
+//  abstract override def moveLeft() {
+//    // flip
+//    // super 
+//  }
+//}
