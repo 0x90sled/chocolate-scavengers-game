@@ -16,7 +16,9 @@ import org.uqbar.math.vectors.Touple_to_Vector
 import org.uqbar.math.vectors.Vector
 import org.uqbar.wollok.choco.actor.traits.Actor
 import org.uqbar.wollok.choco.actor.traits.DefaultState
+import org.uqbar.wollok.choco.actor.traits.Interpolator
 import org.uqbar.wollok.choco.actor.traits.MovesWithKeyboard
+import org.uqbar.wollok.choco.actor.traits.SmoothMovable
 import org.uqbar.wollok.choco.actor.traits.TimeLimitedState
 
 object ScavengersGame extends Game {
@@ -28,25 +30,28 @@ object ScavengersGame extends Game {
   val splittedSprites = ResourceLoader.loadSprite("/scavengers/Scavengers_SpriteSheet.png").split(spriteCellSize)
   splittedSprites.foreach { _.scale(spriteScalling) }
   
+  val cellSize : Vector = (spriteDisplaySize.x * 1.1, spriteDisplaySize.y * 1.1)
+
+  // background terrain
   currentScene.addComponent(new Visible with Positioned {
     var appearance = splittedSprites(38).repeat(10, 10)
   });
   
-  // cells are a little bit (10%) bigger than characters
-  currentScene.addComponent(new Grid(spriteDisplaySize.x * 1.1, spriteDisplaySize.y * 1.1));
+  // grid cells: a little bit (10%) bigger than characters
+  currentScene.addComponent(new Grid(cellSize));
   
-  // layers
+  // elements
   currentScene.addComponent(new Scavenger)
   currentScene.addComponent(new Zombie1)
   currentScene.addComponent(new Zombie2)
 
-  
+//  currentScene.addComponent(new DebugActorInfo)
   
   /**
    * Main character
    */
-  class Scavenger extends Actor with MovesWithKeyboard with Collisionable with ScavengerCharacter {
-    translation = (10, 10)
+  class Scavenger extends Actor with MovesWithKeyboard with SmoothMovable with Collisionable with ScavengerCharacter {
+    translation = cellSize * 0.1 // coupling with cellSize percentage
     
     val defaultStateSprites = splittedSprites.slice(0, 6)
     val attackingStateSprites = splittedSprites.slice(40, 42)
@@ -57,20 +62,18 @@ object ScavengersGame extends Game {
     val hitState = new TimeLimitedState(this, new Animation(0.3, hitStateSprites), 0.6, defaultState)
     
     state = defaultState
-    
-    def velocity = 7
+
+    def velocity = cellSize.x.round
+    override def easingFunction() = Interpolator.easeInSine
     in {
      case Pressed(Space) ⇒ state = attackingState
      case Collision(z : Enemy) ⇒ state = hitState
-//     case Pressed(Comma) ⇒ z += 1
-//     case Pressed(Period) ⇒ z -= 1
     }
   }
   
   trait ScavengerCharacter {
 	  val collisionMargin : Vector = (0.8, 0.8) // percentage 
     // doesn't work well with a rectangular, a bug in chocolate (?)
-//    def boundingBox = new RectangularBoundingBox((spriteDisplaySize.x * collisionMargin.x, spriteDisplaySize.y * collisionMargin.y))
     def boundingBox = new CircularBoundingBox(spriteDisplaySize.x * collisionMargin.x / 2)
   }
   
@@ -91,13 +94,13 @@ object ScavengersGame extends Game {
   }
   
   class Zombie1 extends Enemy {
-    translation = (100, 100)
+    move(100, 100)
     def defaultStateSprites() = splittedSprites.slice(6,12)
     def attackingStateSprites() = splittedSprites.slice(42,44)
   }
   
   class Zombie2 extends Enemy {
-    translation = (200, 100)
+    move(200, 100)
     def defaultStateSprites() = splittedSprites.slice(12,18)
     def attackingStateSprites() = splittedSprites.slice(44,46)
   }

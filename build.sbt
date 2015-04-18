@@ -6,7 +6,10 @@ scalaVersion := "2.11.1"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-lazy val chocolateGameExamples = FDProject("org.uqbar" %% "chocolate-core" % "[1.0.0-SNAPSHOT)")
+lazy val chocolateGameExamples = FDProject(
+	"org.uqbar" %% "chocolate-core" % "[1.0.0-SNAPSHOT)",
+	"org.scalatest" %% "scalatest" % "[2.2,)" % "test"
+)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
