@@ -55,13 +55,20 @@ object Easing {
   val easeInOutQuint = easeInOut(5) _
   
   // sinusoidal
-  val easeInSine = easing{ (t,b,c,d) => 
+  val easeInSine = easing { (t,b,c,d) => 
     -c * Math.cos(t / d * (Math.PI / 2)) + c + b
   }
-  val easeOutSine = easing{ (t,b,c,d) =>
+  val easeOutSine = easing { (t,b,c,d) =>
     c * Math.sin(t/d * (Math.PI/2)) + b
   }
   
+  // exponentials
+  val easeInExpo = easing { (t, b, c, d) => 
+    if (t==0) b else c * Math.pow(2, 10 * (t/d - 1)) + b    
+  }
+  val easeOutExpo = easing { (t,b,c,d) =>
+    if (t==d) b+c else c * (-Math.pow(2, -10 * t/d) + 1) + b
+  }
   
   // REUSING Definitions
   private def easeIn(pow:Double) (t:Double, b:Double, c:Double, d:Double) = c * Math.pow(t / d, pow) + b

@@ -1,5 +1,4 @@
-
-package org.uqbar.wollok.choco.actor.traits
+package org.uqbar.chocollok.actor
 
 import org.uqbar.chocolate.core.appearances.Appearance
 

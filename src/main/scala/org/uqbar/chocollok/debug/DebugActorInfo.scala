@@ -1,4 +1,4 @@
-package org.uqbar.wollok.choco.actor.traits
+package org.uqbar.chocollok.debug
 
 import org.uqbar.cacao.Rectangle
 import org.uqbar.cacao.Renderer

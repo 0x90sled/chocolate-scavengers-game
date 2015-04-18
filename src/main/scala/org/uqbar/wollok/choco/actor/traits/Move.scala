@@ -20,7 +20,9 @@ import org.uqbar.math.vectors.Vector
 import org.uqbar.cacao.Renderer
 import org.uqbar.chocolate.core.appearances.Appearance
 import org.uqbar.chocolate.core.reactions.events.Update
+import org.uqbar.chocollok.actor.Actor
 
+/** base clase directional keys movement (left, right, up, down and AWSD) */
 trait BaseKeyboardMovement extends Actor {
   in {
      case Pressed(W) ⇒ onKeyUp() ; case Pressed(Up(_)) ⇒ onKeyUp()
@@ -38,7 +40,6 @@ trait BaseKeyboardMovement extends Actor {
 
 /**
  * Tracks directional keyboards and moves the player: up, down, left, right.
- * 
  * @author jfernandes
  */
 trait MovesWithKeyboard extends BaseKeyboardMovement {

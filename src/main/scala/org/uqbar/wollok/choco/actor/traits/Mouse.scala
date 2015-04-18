@@ -2,6 +2,7 @@ package org.uqbar.wollok.choco.actor.traits
 
 import org.uqbar.chocolate.core.reactions.events.MouseMoved
 import org.uqbar.chocolate.core.reactions.events.Pressed
+import org.uqbar.chocollok.actor.Actor
 
 import org.uqbar.chocolate.core.reactions.io.MouseButton.Left
 
