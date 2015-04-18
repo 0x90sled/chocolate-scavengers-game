@@ -21,7 +21,7 @@ trait SmoothMovable extends Actuator { movable =>
   }
   
   /** override if you want to change the easing function */
-  def easingFunction() : Interpolator.EasingFunction = Interpolator.linear
+  def easingFunction() : Easing.EasingFunction = Easing.linear
 
   def interpolator(delta:Vector, endPosition:Vector) (componentExtractor : (Vector)=>Double) = {
     if (componentExtractor(delta) == 0) 

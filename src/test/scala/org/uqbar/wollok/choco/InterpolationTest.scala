@@ -1,13 +1,13 @@
 package org.uqbar.wollok.choco
 
 import org.scalatest.FunSuite
+import org.uqbar.wollok.choco.actor.traits.Easing
 import org.uqbar.wollok.choco.actor.traits.InterpolatingValueGenerator
-import org.uqbar.wollok.choco.actor.traits.Interpolator
 
 class InterpolationTest extends FunSuite {
 
   test("Interpolate Negative values") {
-    val generator = new InterpolatingValueGenerator(10, -10, 1000, Interpolator.linear)
+    val generator = new InterpolatingValueGenerator(10, -10, 1000, Easing.linear)
 
     assert(8.0 == generator.generate(100))
     assert(6.0 == generator.generate(100)) 

@@ -16,10 +16,11 @@ import org.uqbar.math.vectors.Touple_to_Vector
 import org.uqbar.math.vectors.Vector
 import org.uqbar.wollok.choco.actor.traits.Actor
 import org.uqbar.wollok.choco.actor.traits.DefaultState
-import org.uqbar.wollok.choco.actor.traits.Interpolator
 import org.uqbar.wollok.choco.actor.traits.MovesWithKeyboard
 import org.uqbar.wollok.choco.actor.traits.SmoothMovable
 import org.uqbar.wollok.choco.actor.traits.TimeLimitedState
+import org.uqbar.wollok.choco.actor.traits.Easing
+import org.uqbar.wollok.choco.actor.traits.RotationalMovement
 
 object ScavengersGame extends Game {
   def title = "Scavengers Game !"
@@ -44,6 +45,13 @@ object ScavengersGame extends Game {
   currentScene.addComponent(new Scavenger)
   currentScene.addComponent(new Zombie1)
   currentScene.addComponent(new Zombie2)
+  
+  currentScene.addComponent(new Scavenger {
+    override def easingFunction() = Easing.linear
+  })
+  
+  currentScene.addComponent(new Scavenger with RotationalMovement { translation = cellSize * 3.1}) 
+  
 
 //  currentScene.addComponent(new DebugActorInfo)
   
@@ -64,7 +72,7 @@ object ScavengersGame extends Game {
     state = defaultState
 
     def velocity = cellSize.x.round
-    override def easingFunction() = Interpolator.easeInSine
+    override def easingFunction() = Easing.easeInOutCubic
     in {
      case Pressed(Space) ⇒ state = attackingState
      case Collision(z : Enemy) ⇒ state = hitState

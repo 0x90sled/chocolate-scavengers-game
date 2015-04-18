@@ -17,25 +17,8 @@ class Deplacement(var x : ValueGenerator, var y : ValueGenerator) {
 
 
 // *************************
-// ** Interpolations
+// ** Generators
 // *************************
-
-
-object Interpolator {
-  /**
-   * t: currenttime
-   * b: start value
-   * c: change in value
-   * d: duration
-   */
-  type EasingFunction = (Double, Double, Double, Double)=>Double
-  
-  // functions
-  def linear(t : Double, b : Double, c : Double, d : Double) = c * t / d + b 
-  def easeInSine(t : Double, b : Double, c : Double, d : Double) = -c * Math.cos(t/d * (Math.PI/2)) + c + b
-  // TODO: add more easing functions
-  
-}
 
 /**
  * An object that generates values (one per call)
@@ -58,7 +41,7 @@ class ConstantValueGenerator(val p: Positioned, val component: (Vector)=>Double)
  * Return a value based on an easingFunction.
  * Holds the state of the execution.
  */
-class InterpolatingValueGenerator(val startValue : Double, val endValue : Double, val duration : Double, val easingFunction : Interpolator.EasingFunction)  extends ValueGenerator {
+class InterpolatingValueGenerator(val startValue : Double, val endValue : Double, val duration : Double, val easingFunction : Easing.EasingFunction)  extends ValueGenerator {
 	var runtime = 0d
   var change = endValue - startValue
   var lastValue: Double = _
